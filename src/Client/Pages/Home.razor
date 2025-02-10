@@ -1,0 +1,27 @@
+﻿@page "/"
+@inject HubConnection HubConnection
+@inject ISnackbar Snackbar
+
+<PageTitle>Home</PageTitle>
+
+<h3>Notifications Hub</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        HubConnection.On<string, string>("ReceiveNotification", (message, severity) =>
+        {
+            var severityLevel = severity switch
+            {
+                "Info" => Severity.Info,
+                "Success" => Severity.Success,
+                "Warning" => Severity.Warning,
+                "Error" => Severity.Error,
+                _ => Severity.Normal
+            };
+            Snackbar.Add(message, severityLevel);
+        });
+
+        await HubConnection.StartAsync();
+    }
+}
