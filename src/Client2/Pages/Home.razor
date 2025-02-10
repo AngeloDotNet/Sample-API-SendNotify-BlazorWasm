@@ -1,0 +1,33 @@
+﻿@page "/"
+@using MudBlazor
+@using Client2.Service
+
+@inject ISnackbar Snackbar
+@inject NotificationService NotificationService
+
+<PageTitle>Home</PageTitle>
+
+<h3>Notifications Hub</h3>
+
+<MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary" OnClick="SendNotification">Send Notification</MudButton>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        NotificationService.OnNotificationReceived += ShowNotification;
+        await NotificationService.StartAsync();
+    }
+
+    private async Task SendNotification()
+    {
+        Random random = new Random();
+        int randomNumber = random.Next(1, 100);
+
+        await NotificationService.SendNotification($"Prova notifica {randomNumber}");
+    }
+
+    private void ShowNotification(string message)
+    {
+        Snackbar.Add(message, Severity.Normal);
+    }
+}
